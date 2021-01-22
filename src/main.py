@@ -5,10 +5,11 @@ Optionally, a term dictionary may be applied before translation begins.
 21.01.2021
 """
 
+import os
+import sys
 import json
 import logging
 import time
-import sys
 import clipboard
 import logzero
 from logzero import logger
@@ -64,6 +65,10 @@ def set_loglevel(level):
 
 
 if __name__ == "__main__":
+    # Set dir to current file, in order to guarantee relative paths
+    dir_name = os.path.dirname(os.path.abspath(sys.argv[0]))
+    os.chdir(dir_name)
+
     # Load config, restore if necessary
     config = {}
     try:
@@ -117,12 +122,6 @@ if __name__ == "__main__":
     while True:
         logger.info("Waiting for clipboard update...")
         clipboard_text = clipboard_get_new(cfg_cb_wait)
-
-        # Stop if word copied is "stop"
-        if clipboard_text[0].upper() == "STOP":
-            print("Halting...")
-            browser.close_driver()
-            sys.exit()
 
         if not cfg_cb_acc:
             browser.clear_input()
